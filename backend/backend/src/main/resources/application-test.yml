@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db_test;MODE=MySQL
+  genFile:
+    dirPath: c:/temp/glog_test
