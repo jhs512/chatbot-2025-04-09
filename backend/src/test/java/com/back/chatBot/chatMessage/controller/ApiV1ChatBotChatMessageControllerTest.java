@@ -97,8 +97,7 @@ public class ApiV1ChatBotChatMessageControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.resultCode").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("새 대화가 생성되었습니다."))
-                .andExpect(jsonPath("$.data.botMessage").value(containsString("쇼핑")))
-                .andExpect(jsonPath("$.data.botMessage").value(containsString("제주도 숙소")));
+                .andExpect(jsonPath("$.data.botMessage").value(containsString("장보기")));
 
     }
 }

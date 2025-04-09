@@ -3,9 +3,11 @@ package com.back.domain.chatBot.chatRoom.service;
 import com.back.domain.chatBot.chatRoom.entity.ChatBotChatRoom;
 import com.back.domain.chatBot.chatRoom.repository.ChatBotChatRoomRepository;
 import com.back.domain.member.member.entity.Member;
+import com.back.domain.post.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -48,16 +50,21 @@ public class ChatBotChatRoomService {
 
         sb.append("\n");
 
-        sb.append("현재시각 : 2025-04-09 17:10:00\n");
+        sb.append("# 현지 날짜 : " + LocalDateTime.now());
 
-        sb.append("# 일정 105(2025-04-10 ~ 2025-04-11) 시작");
+        postService.findByAuthorPaged(author, 1, 10).getContent()
+                .forEach(post -> {
+                    sb.append("# 일정 ").append(post.getId()).append(" 시작\n");
 
-        sb.append("Day1 세부일정 103434 : 시작 2025-04-10 12:00, 쇼핑\n");
-        sb.append("Day1 세부일정 103435 : 시작 2025-04-10 14:00, 제주도 숙소로 이동\n");
-        sb.append("Day2 세부일정 103436 : 시작 2025-04-11 14:00, 제주도 숙소에서 퇴실\n");
+                    post.getComments().forEach(comment -> {
+                        sb.append("## 세부일정 : " + comment.getContent());
+                    });
 
-        sb.append("# 일정 105 끝\n");
+                    sb.append("# 일정 ").append(post.getId()).append(" 끝\n");
+                });
 
         return sb.toString();
     }
+
+    private final PostService postService;
 }
