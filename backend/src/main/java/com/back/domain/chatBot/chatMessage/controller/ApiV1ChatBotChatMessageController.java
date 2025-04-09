@@ -62,11 +62,7 @@ public class ApiV1ChatBotChatMessageController {
 
         // 시스템 메시지 추가 (한국인 컨텍스트)
         List<Message> messages = new ArrayList<>();
-        messages.add(new SystemMessage("""
-                당신은 한국인입니다. 당신은 한국어로 대답해야 합니다.
-                이 채팅의 목적인 plan-it 이라는 서비스를 이용하는 고객에게 해당 서비스의 정보를 제공하는데 있습니다.
-                plan-it 은 고객이 여행을 계획하는데 도움을 주는 서비스입니다.
-                """));
+        messages.add(new SystemMessage(chatBotChatRoomService.getSystemMessageContent(chatBotChatRoom)));
 
         chatBotChatRoom
                 .getChatMessages()

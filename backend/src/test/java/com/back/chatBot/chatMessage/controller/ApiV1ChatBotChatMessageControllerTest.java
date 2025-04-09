@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -63,6 +64,41 @@ public class ApiV1ChatBotChatMessageControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.resultCode").value("201-1"))
                 .andExpect(jsonPath("$.msg").value("새 대화가 생성되었습니다."))
-                .andExpect(jsonPath("$.data.botMessage").value("이 서비스의 이름은 plan-it입니다!(plan-it) 이 서비스는 고객님께서 여행을 계획하는데 도움을 주는 서비스입니다."));
+                .andExpect(jsonPath("$.data.botMessage").value(containsString("plan-it")));
+
+    }
+
+    @Test
+    @DisplayName("일정 확인가능한지?")
+    void t2() throws Exception {
+        Member actor = memberService.findByUsername("user1").get();
+        String actorAuthToken = memberService.genAuthToken(actor);
+
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/chatBot/chat/rooms/1/messages")
+                                .header("Authorization", "Bearer " + actorAuthToken)
+                                .content("""
+                                        {
+                                            "userMessage": "나 내일 일정 뭐지?"
+                                        }
+                                        """)
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+
+        ChatBotChatRoom chatBotChatRoom = chatBotChatRoomService.findById(1L).get();
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ChatBotChatMessageController.class))
+                .andExpect(handler().methodName("make"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.resultCode").value("201-1"))
+                .andExpect(jsonPath("$.msg").value("새 대화가 생성되었습니다."))
+                .andExpect(jsonPath("$.data.botMessage").value(containsString("쇼핑")))
+                .andExpect(jsonPath("$.data.botMessage").value(containsString("제주도 숙소")));
+
     }
 }
